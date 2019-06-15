@@ -1,0 +1,119 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Bussiness Owner Requests</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+	</head>
+	<body class="subpage">
+
+		<!-- Header -->
+			<header id="header">
+				<div class="logo"><a href=""> <span>Bussiness Account Owner Requests</span></a></div>
+				<a href="#menu">Menu</a>
+			</header>
+
+		<!-- Nav -->
+			<nav id="menu">
+				<ul class="links">
+					<li><a href="adminHome.html">Bussiness Owner Requests</a></li>
+					<li><a href="editad.html">Profile</a></li>
+					<li><a href="addAdmin.html">Add Admin</a></li>
+					<li><a href="userList.html">View Users</a></li>
+					<li><a href="adminstat.html">Sale Staticss</a></li>
+					<li><a href="index.php">Sign Out</a></li>
+				</ul>
+			</nav>
+
+		<!-- Main -->
+			<div id="main">
+
+				<!-- Section -->
+					<section class="wrapper">
+						<div class="inner">
+							<header class="align-center">
+								<h2>Bussiness Owner Accounts</h2>
+							</header>
+							<table class="alt" id="tableb" name="table">
+								<thead>
+								<tr>
+								<th></th>
+								<th onclick="w3.sortHTML('#tableb','.item', 'td:nth-child(2)')" style="cursor:pointer">Username</th>
+								<th onclick="w3.sortHTML('#tableb','.item', 'td:nth-child(3)')" style="cursor:pointer">Footsal Court Name</th>
+								<th onclick="w3.sortHTML('#tableb','.item', 'td:nth-child(4)')" style="cursor:pointer">State</th>
+								</tr>
+								</thead>
+								<tbody>							
+								</tbody>
+							</table>
+							<header class="align-center">
+								<h2>Futsal Player</h2>
+							</header>
+							<table class="alt" id="tablef" name="table">
+								<thead>
+								<tr>
+								<th></th>
+								<th onclick="w3.sortHTML('#tablef','.item2', 'td:nth-child(2)')" style="cursor:pointer">Username</th>
+								<th onclick="w3.sortHTML('#tablef','.item2', 'td:nth-child(3)')" style="cursor:pointer">Full Name</th>
+								<th onclick="w3.sortHTML('#tablef','.item2', 'td:nth-child(4)')" style="cursor:pointer">Contact Number</th>
+								</tr>
+								</thead>
+								<tbody>							
+								</tbody>
+							</table>
+						</div>
+					</section>
+					
+			</div>
+					
+
+			</div>
+
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/skel.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+<script src="https://www.w3schools.com/lib/w3.js"></script>
+	</body>
+	<script>		
+	$.ajax({
+		type:"post",
+		url:"login.php",
+		data: 
+		{  
+			'action' :'getUsers'
+		},
+		cache:false,
+		success: function (html) 
+		{
+			var jsonData = JSON.parse(html);
+						
+			for(x in jsonData)
+			{
+				if(jsonData[x].ut=='bo')
+				{
+					var tabCont="<tr class='item' ><td><a href=editUser.html?"+jsonData[x].userName+" style='color:red'>Edit</a></td>";
+					tabCont+='<td>'+jsonData[x].userName+'</td>';
+					tabCont+='<td>'+jsonData[x].fcName+'</td>';
+					tabCont+='<td>'+jsonData[x].state+'</td><tr>';
+					$(tableb).find('tbody').append( tabCont );
+				}
+				else
+				{
+					var tabCont="<tr class='item2'><td><a href=editUser.html?"+jsonData[x].userName+" style='color:red'>Edit</a></td>";
+					tabCont+='<td>'+jsonData[x].userName+'</td>';
+					tabCont+='<td>'+jsonData[x].fname+'</td>';
+					tabCont+='<td>'+jsonData[x].contactNo+'</td><tr>';
+					$(tablef).find('tbody').append( tabCont );
+				}
+			}
+		}
+	});
+	</script>
+	
+</html>

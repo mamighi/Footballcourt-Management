@@ -1,0 +1,135 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Profile</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+	</head>
+	<body class="subpage">
+
+		<!-- Header -->
+			<header id="header">
+				<div class="logo"><a href=""> <span>Profile</span></a></div>
+				<a href="#menu">Menu</a>
+			</header>
+
+		<!-- Nav -->
+			<nav id="menu">
+				<ul class="links">
+					<li><a href="bookcourt.html">Book Court</a></li>
+					<li><a href="editFu.html">Profile</a></li>
+					<li><a href="historyfu.html">Book History</a></li>
+					<li><a href="index.php">Sign Out</a></li>
+				</ul>
+			</nav>
+
+		<!-- Main -->
+			<div id="main">
+
+				<!-- Section -->
+					<section class="wrapper">
+						<div class="inner">
+							<header class="align-center">
+								<h1>Account Details</h1>
+							</header>
+									  
+				<div id="FP">
+					<div class="row uniform">
+					<div class="6u 12u$(xsmall)">
+					Full Name:
+						<input type="text" name="FullName" id="fnameFP" value="" placeholder="Full Name">
+						</div>
+						<div class="6u 12u$(xsmall)">
+						Contact Number:
+						<input type="text" name="con" id="con" value="" placeholder="Contact Number">
+						</div>
+						<div class="6u 12u$(xsmall)">
+						Email:
+						<input type="text" name="email" id="emailFP" value="" placeholder="Email" readonly>
+						</div>
+						<div class="6u 12u$(xsmall)">
+						Password:
+						<input type="password" name="pas" id="pasFP" value="" placeholder="Password">
+						</div>
+						<div class="6u 12u$(xsmall)">
+							<button id="ufu" class="button fit" style="width:100%; background:green">Update</button>
+						</div>
+					</div>
+				</div>
+						
+					</section>
+					
+			</div>
+					
+
+			</div>
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/skel.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+	<script>
+	var username=sessionStorage.getItem("userName");
+	$.ajax({
+		type:"post",
+		url:"login.php",
+		data: 
+		{  
+			'action' :'getUsers'
+		},
+		cache:false,
+		success: function (html) 
+		{
+			var jsonData = JSON.parse(html);
+						
+			for(x in jsonData)
+			{
+				if(jsonData[x].userName==username)
+				{
+						document.getElementById("FP").style.display="block";
+						document.getElementById("fnameFP").value=jsonData[x].fname;
+						document.getElementById("con").value=jsonData[x].contactNo;
+						document.getElementById("emailFP").value=jsonData[x].email;
+						document.getElementById("pasFP").value=jsonData[x].password;
+				
+				}
+			}
+		}
+	});
+	document.getElementById('ufu').onclick=function()
+	{
+		var name=document.getElementById("fnameFP").value;
+		var email=document.getElementById("emailFP").value;
+		var con=document.getElementById("con").value;
+		var pasFP=document.getElementById("pasFP").value;
+		if(name.length<1 || email.length<1 || con.length<1 || pasFP.length<1)
+		{
+			alert("Please Fill ALl The Field");
+			return;
+		}
+		$.ajax({
+			type:"post",
+			url:"login.php",
+			data: 
+			{  
+			   'action' :'update',
+			   'username' :email,
+			   'password' :pasFP,
+			   'fname' :name,
+			   'ut': 'fu',
+			   'cno' : con
+			},
+			cache:false,
+			success: function (html) 
+			{
+				alert(html);
+			}
+		});
+	}
+	</script>
+</html>

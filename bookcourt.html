@@ -1,0 +1,94 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Book Court</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+	</head>
+	<body class="subpage">
+
+		<!-- Header -->
+			<header id="header">
+				<div class="logo"><a href="index.html"> <span>Courts List</span></a></div>
+				<a href="#menu">Menu</a>
+			</header>
+
+		<!-- Nav -->
+			<nav id="menu">
+				<ul class="links">
+					<li><a href="bookcourt.html">Book Court</a></li>
+					<li><a href="editFu.html">Profile</a></li>
+					<li><a href="historyfu.html">Book History</a></li>
+					<li><a href="viewpoint.html">View Points</a></li>
+					<li><a href="index.php">Sign Out</a></li>
+				</ul>
+			</nav>
+
+		<!-- Main -->
+			<div id="main">
+
+				<!-- Section -->
+					<section class="wrapper">
+						<div class="inner">
+						<header class="align-center">
+								<h1>List Of Courts</h1>
+							</header>
+							<table class="alt" id="table" name="table">
+												<thead>
+													<tr>
+														<th></th>
+														<th onclick="w3.sortHTML('#table','.item', 'td:nth-child(2)')" style="cursor:pointer">Court Name</th>
+														<th onclick="w3.sortHTML('#table','.item', 'td:nth-child(3)')" style="cursor:pointer">State</th>
+														<th onclick="w3.sortHTML('#table','.item', 'td:nth-child(4)')" style="cursor:pointer">Address</th>
+													</tr>
+												</thead>
+												<tbody>
+													
+												</tbody>
+
+							</table>
+						
+						</div>
+						
+						
+					</section>
+					
+			</div>
+					
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/skel.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+			<script src="https://www.w3schools.com/lib/w3.js"></script>
+	</body>
+	<script>
+			$.ajax({
+					type:"post",
+					url:"court.php",
+					data: 
+					{  
+					   'action' :'getallcourts'
+					},
+					cache:false,
+					success: function (html) 
+					{
+						var jsonData = JSON.parse(html);
+						for (x in jsonData) {
+							var tabCont="<tr><td><a href=bookcourt2.html?"+jsonData[x].ID+" style='color:red'>VIEW COURTS</a></td>";
+							tabCont+='<td>'+jsonData[x].Name+'</td>';
+							tabCont+='<td>'+jsonData[x].state+'</td>';
+							tabCont+='<td>'+jsonData[x].Address+'</td>';
+							$(table).find('tbody').append( tabCont );
+						}
+					   
+					}
+					});
+	</script>
+</html>

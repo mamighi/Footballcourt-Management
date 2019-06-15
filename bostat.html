@@ -1,0 +1,164 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Sale Statics</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+	</head>
+	<body class="subpage">
+
+		<!-- Header -->
+			<header id="header">
+				<div class="logo"><a href=""> <span>Sale Statics</span></a></div>
+				<a href="#menu">Menu</a>
+			</header>
+
+		<!-- Nav -->
+			<nav id="menu">
+				<ul class="links">
+					<li><a href="ManageCourts.html">Manage Courts</a></li>
+					<li><a href="editBo.html">Profile</a></li>
+					<li><a href="bookcourtBo.html">Booking Court</a></li>
+					<li><a href="historyBo.html">Booking History</a></li>
+					<li><a href="bostat.html">Sale Statistics</a></li>
+					<li><a href="index.php">Sign Out</a></li>
+				</ul>
+			</nav>
+
+		<!-- Main -->
+			<div id="main">
+
+				<!-- Section -->
+					<section class="wrapper">
+						<div class="inner">
+							<header class="align-center">
+								<h1>Sale Statics</h1>
+							</header>
+					<div class="row uniform">
+					
+								<div class="6u 12u$(xsmall)">
+								FROM:
+								 <input type="date" id="f" name="bday" style="width:100%" onchange="loadData();">
+								</div>	
+								<div class="6u 12u$(xsmall)">
+								TO:
+								 <input type="date" id="t" name="bday" style="width:100%" onchange="loadData();">
+								</div>	
+
+							</div>
+							</br>
+									<table class="alt" id="table" name="table">
+								<thead>
+								<tr>
+									<th>Date</th>
+									<th>Admin Fee</th>	
+									<th>Net Income</th>
+								</tr>
+								</thead>
+								<tbody>	
+								</tbody>
+							</table>
+						</div>
+
+					</section>
+					
+			</div>
+					
+
+			</div>
+
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/skel.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+	<script>
+	var username=sessionStorage.getItem("userName");
+	var today = new Date();
+	document.getElementById('f').value = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
+	document.getElementById('t').value = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
+	loadData();
+	function loadData()
+	{
+	
+		var tableHeaderRowCount = 1;
+		var table = document.getElementById('table');
+		var rowCount = table.rows.length;
+		for (var i = tableHeaderRowCount; i < rowCount; i++) {
+			table.deleteRow(tableHeaderRowCount);
+		}
+		$.ajax({
+					type:"post",
+					url:"booking.php",
+					data: 
+					{  
+					   'action' :'adgetbook'
+					},
+					cache:false,
+					success: function (html) 
+					{
+						
+						var jsonData = JSON.parse(html);
+							var total=0;
+							var total2=0;
+							var darr=[];
+							var parr=[];
+							for (x in jsonData) {
+								var unixTimeZero= jsonData[x].date;
+								if(unixTimeZero>=document.getElementById('f').value && unixTimeZero<=document.getElementById('t').value && jsonData[x].username==username)
+								{
+									var ind=-1;
+									for(var i=0;i<darr.length;i++)
+									{
+										if(darr[i]==jsonData[x].date)
+											ind=i;
+									}
+									if(ind==-1)
+									{
+										darr.push(jsonData[x].date);
+										parr.push(parseInt(jsonData[x].price));
+									}
+									else
+									{
+										parr[ind]+=parseInt(jsonData[x].price);
+									}
+									/*var tabCont="<tr>";
+									tabCont+='<td align="center">'+jsonData[x].date+'</td>';
+									tabCont+='<td align="center">'+jsonData[x].price/10+'</td>';
+									tabCont+='<td align="center">'+jsonData[x].price*90/100+'</td><tr>';
+									$(table).find('tbody').append( tabCont );
+									total+=jsonData[x].price/10;
+									total2+=jsonData[x].price*90/100;*/
+								}
+							}
+							for(var i=0;i<darr.length;i++)
+							{
+								var tabCont="<tr>";
+								tabCont+='<td align="center">'+darr[i]+'</td>';
+								tabCont+='<td align="center">'+Math.ceil(parr[i]/10)+'</td>';
+								tabCont+='<td align="center">'+Math.ceil(parr[i]*90/100)+'</td><tr>'
+								$(table).find('tbody').append( tabCont );
+								total+=parr[i]/10;
+								total2+=parr[i]*90/100;
+							}
+							
+							
+							
+							var tabCont="<tr>";
+								tabCont+='<td align="center" style="color:red;font-weight: bold">TOTAL</td>';
+								tabCont+='<td align="center" style="color:red;font-weight: bold">RM'+Math.ceil(total)+'</td>';
+									tabCont+='<td align="center" style="color:red;font-weight: bold">RM'+Math.ceil(total2)+'</td><tr>';
+								$(table).find('tbody').append( tabCont );
+						
+					   
+					}
+		});
+	}
+	</script>
+</html>

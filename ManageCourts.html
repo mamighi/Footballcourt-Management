@@ -1,0 +1,221 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Manage Courts</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+	</head>
+	<body class="subpage">
+
+		<!-- Header -->
+			<header id="header">
+				<div class="logo"><a href="ManageCourts.html"> <span>Manage Courts</span></a></div>
+				<a href="#menu">Menu</a>
+			</header>
+
+		<!-- Nav -->
+			<nav id="menu">
+				<ul class="links">
+					<li><a href="ManageCourts.html">Manage Courts</a></li>
+					<li><a href="editBo.html">Profile</a></li>
+					<li><a href="bookcourtBo.html">Booking Court</a></li>
+					<li><a href="historyBo.html">Booking History</a></li>
+					<li><a href="bostat.html">Sale Statistics</a></li>
+					<li><a href="index.php">Sign Out</a></li>
+				</ul>
+			</nav>
+
+		<!-- Main -->
+			<div id="main">
+
+				<!-- Section -->
+					<section class="wrapper">
+						<div class="inner">
+							<header class="align-center">
+								<h1>Courts List</h1>
+							</header>
+							<div id="crts" style="width:70%;margin-left:15%">
+							</div>
+											<div class="row uniform">
+					<div class="6u 12u$(xsmall)">
+						<button id="add" class="button fit" style="width:250px; background:green">Add New Court</button>
+					</div>
+					</div>
+						</div>
+							
+					</section>
+
+			</div>
+					
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/skel.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+	<script>
+		var selImage='';
+		var username=sessionStorage.getItem("userName");
+		 function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#img')
+                        .attr('src', e.target.result)
+
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+			 var file = input.files[0];
+			  var reader = new FileReader();
+			  reader.onloadend = function() {
+				selImage=reader.result;
+			  }
+			  reader.readAsDataURL(file);
+        }
+		document.getElementById("add").onclick=function()
+		{
+		
+			if(document.getElementById("add").innerHTML =='Add New Court')
+			{
+				var newdiv='<div class="row uniform"><div class="6u 12u$(xsmall)"><input type="text" name="fcName" id="fcName" value="" 	placeholder="Footsal Court Name"></div><div class="6u 12u$(xsmall)">'+
+							'<select name="State" id="state">'+
+							'<option value="">- State -</option>'+
+							'<option value="Kuala Lumpur">Kuala Lumpur</option>'+
+							'<option value="Johor">Johor</option>'+
+							'<option value="Kedah">Kedah</option>'+
+							'<option value="Kelantan">Kelantan</option>'+
+							'<option value="Malacca">Malacca</option>'+
+							'<option value="Negeri Sembilan">Negeri Sembilan</option>'+
+							'<option value="Pahang">Pahang</option>'+
+							'<option value="Perak">Perak</option>'+
+							'<option value="Perlis">Perlis</option>'+
+							'<option value="Penang">Penang</option>'+
+							'<option value="Sabah">Sabah</option>'+
+							'<option value="Sarawak">Sarawak</option>'+
+							'<option value="Selangor">Selangor</option>'+
+							'<option value="Terengganu">Terengganu</option>'+
+							'</select></div><div class="6u 12u$(xsmall)">'+
+							'<input type="text" name="address" id="address" value="" placeholder="Address"></div><div class="6u 12u$(xsmall)">'+
+							'<input type="text" name="cno" id="cno" value="" placeholder="Contact Number"></div><div class="6u 12u$(xsmall)">'+
+							'<span class="image left"><img id="img" src="images/banner.jpg" alt=""></span><input type="file" name="pic" id="pic" onchange="readURL(this);" accept="image/*"></div></div>';
+				document.getElementById("crts").innerHTML +=newdiv;
+				document.getElementById("add").innerHTML="Save";
+				/*document.getElementById("pic").onchange=function(){
+					document.getElementById("img").src=document.getElementById("pic").value;
+				}*/
+			}
+			else
+			{
+				var name=document.getElementById("fcName").value;
+				var state=document.getElementById("state").value;
+				var cno=document.getElementById("cno").value;
+				var add=document.getElementById("address").value;
+				if(name.length<1 || state.length<1 || cno.length<1 || add.length<1)
+				{
+					alert("Please Fill All the Field");
+					return;
+				}
+				$.ajax({
+				type:"post",
+				url:"court.php",
+				data: 
+				{  
+				   'action' :'add',
+				   'name' : name,
+				   'state' :state,
+				   'cno' : cno,
+				   'add' : add,
+				   'img': selImage,
+				   'username' :username
+				},
+				cache:false,
+				success: function (html) 
+				{
+				   window.location.reload();
+				}
+				});
+			}
+			
+		}
+		function setImage()
+		{
+		}
+		$.ajax({
+				type:"post",
+				url:"court.php",
+				data: 
+				{  
+				   'action' :'get',
+				   'username' :username
+				},
+				cache:false,
+				success: function (html) 
+				{
+				   var jsonData = JSON.parse(html);
+				   for (x in jsonData) {
+						var nameId="name"+jsonData[x].ID;
+						var stateId="state"+jsonData[x].ID;
+						var addId="add"+jsonData[x].ID;
+						var cnoId="cno"+jsonData[x].ID;
+						var editId="ed"+jsonData[x].ID;
+						var delId="de"+jsonData[x].ID;
+						var img=jsonData[x].image;
+						if(img==null || img.length<10)
+						{
+							img='images/banner.jpg';
+						}
+						var newdiv='<div class="row uniform"><div class="6u 12u$(xsmall)"><input type="text" name="fcName" id="'+nameId+'" 		value="'+jsonData[x].Name+'"placeholder="Footsal Court Name" readonly></div><div class="6u 12u$(xsmall)">'+
+							'<input type="text" name="fcName" id="'+stateId+'" 		value="'+jsonData[x].state+'"placeholder="Footsal Court Name" readonly></div><div class="6u 12u$(xsmall)">'+
+							'<input type="text" name="address" id="'+addId+'" value="'+jsonData[x].Address+'" placeholder="Address"></div><div class="6u 12u$(xsmall)">'+
+							'<input type="text" name="cno" id="'+cnoId+'" value="'+jsonData[x].cno+'" placeholder="Contact Number"></div><div class="6u 12u$(xsmall)">'+
+							'<span class="image left"><img src="'+img+'" alt=""></span></div><div class="6u 12u$(xsmall)"><button onclick="save('+jsonData[x].ID+')" id="'+editId+'" class="button fit" style="background:green">Save</button><button onclick="del('+jsonData[x].ID+')" id="'+delId+'" class="button fit" style="background:red">Show Courts</button></div></div><hr class="major">';
+				document.getElementById("crts").innerHTML +=newdiv;
+				   }
+				}
+				});
+				function del( id)
+				{
+					var queryString = "?" + id;
+					window.location.href = "CourtsList.html" + queryString;
+				}
+				function save( id)
+				{
+					var addId="add"+id;
+					var cnoId="cno"+id;
+					var cno=document.getElementById(cnoId).value;
+					var add=document.getElementById(addId).value;
+					if(cno.length<1 || add.length<1)
+					{
+						alert("Please Fill All the Field");
+						return;
+					}
+					$.ajax({
+					type:"post",
+					url:"court.php",
+					data: 
+					{  
+					   'action' :'update',
+					   'id' : id,
+					   'cno' : cno,
+					   'add' : add
+					},
+					cache:false,
+					success: function (html) 
+					{
+					   window.location.reload();
+					}
+					});
+				}
+			
+	</script>
+</html>

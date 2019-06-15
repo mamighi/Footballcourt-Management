@@ -1,0 +1,246 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Sale Statics</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+	</head>
+	<body class="subpage">
+
+		<!-- Header -->
+			<header id="header">
+				<div class="logo"><a href=""> <span>Sale Statics</span></a></div>
+				<a href="#menu">Menu</a>
+			</header>
+
+		<!-- Nav -->
+			<nav id="menu">
+				<ul class="links">
+					<li><a href="adminHome.html">Bussiness Owner Requests</a></li>
+					<li><a href="editad.html">Profile</a></li>
+					<li><a href="addAdmin.html">Add Admin</a></li>
+					<li><a href="userList.html">View Users</a></li>
+					<li><a href="adminstat.html">Sale Staticss</a></li>
+					<li><a href="index.php">Sign Out</a></li>
+				</ul>
+			</nav>
+
+		<!-- Main -->
+			<div id="main">
+
+				<!-- Section -->
+					<section class="wrapper">
+						<div class="inner">
+							<header class="align-center">
+								<h1>Sale Statics</h1>
+							</header>
+					<div class="row uniform">
+					
+								<div class="6u 12u$(xsmall)">
+								FROM:
+								 <input type="date" id="f" name="bday" style="width:100%" onchange="loadData();">
+								</div>	
+								<div class="6u 12u$(xsmall)">
+								TO:
+								 <input type="date" id="t" name="bday" style="width:100%" onchange="loadData();">
+								</div>	
+								<div class="6u 12u$(xsmall)">
+								Court:
+								<select onchange="loadData();" name="c" id="c" >
+									
+								</select>
+								</div>
+								
+							</div>
+							</br>
+									<table class="alt" id="table" name="table">
+								<thead>
+								<tr>
+									<th>Court Name</th>
+									<th>Date</th>
+									<th>Admin Fee</th>	
+								</tr>
+								</thead>
+								<tbody>	
+								</tbody>
+							</table>
+						</div>
+
+					</section>
+					
+			</div>
+					
+
+			</div>
+
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/skel.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+	<script>
+	var today = new Date();
+	document.getElementById('f').value = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
+	document.getElementById('t').value = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
+	loadcourts();
+	var aid=[];
+	var aname=[];
+	function loadcourts()
+	{
+			$.ajax({
+				type:"post",
+				url:"court.php",
+				data: 
+				{  
+				   'action' :'getallcourts'
+				},
+				cache:false,
+				success: function (html) 
+				{
+				var z = document.getElementById("c");
+					var option2 = document.createElement("option");
+					option2.text = "All Courts";
+					option2.value="";
+					z.add(option2);
+					 var jsonData = JSON.parse(html);
+					 
+					 for(x in jsonData)
+					 {
+						
+						var option = document.createElement("option");
+						option.text = jsonData[x].Name;
+						option.value=jsonData[x].ID;
+						z.add(option);
+						aid.push(jsonData[x].ID);
+						aname.push(jsonData[x].Name);
+					}
+				}
+			});
+	}
+	loadData();
+	function loadData()
+	{
+		var cid=document.getElementById('c').value;
+		var tableHeaderRowCount = 1;
+		var table = document.getElementById('table');
+		var rowCount = table.rows.length;
+		for (var i = tableHeaderRowCount; i < rowCount; i++) {
+			table.deleteRow(tableHeaderRowCount);
+		}
+		$.ajax({
+					type:"post",
+					url:"booking.php",
+					data: 
+					{  
+					   'action' :'adgetbook'
+					},
+					cache:false,
+					success: function (html) 
+					{
+						
+						var jsonData = JSON.parse(html);
+					
+						if(cid.length<1 )
+						{
+							var total=0;
+							var arrd=[];
+							var arri=[];
+							var arrp=[];
+							for (x in jsonData) {
+								var unixTimeZero= jsonData[x].date;
+								if(unixTimeZero>=document.getElementById('f').value && unixTimeZero<=document.getElementById('t').value)
+								{
+									var ind=-1;
+									for(var i=0;i<arri.length;i++)
+									{
+										if(arri[i]==jsonData[x].ID && arrd[i]==jsonData[x].date)
+											ind=i;
+									}
+									if(ind==-1)
+									{
+										arri.push(jsonData[x].ID);
+										arrd.push(jsonData[x].date);
+										arrp.push(parseInt(jsonData[x].price));
+									}
+									else
+										arrp[ind]+=parseInt(jsonData[x].price);
+									
+								}
+							}
+							for(var i=0;i<arri.length;i++)
+							{
+								var name="";
+								for(var j=0;j<aid.length;j++)
+								{
+									if(aid[j]==arri[i])
+										name=aname[j];
+								}
+									var tabCont='<tr><td align="center">'+name+'</td>';
+									tabCont+='<td align="center">'+arrd[i]+'</td>';
+									tabCont+='<td align="center">'+Math.ceil(arrp[i]/10)+'</td><tr>';
+									$(table).find('tbody').append( tabCont );
+									total+=Math.ceil(arrp[i]/10);
+							}
+							var tabCont="<tr><td></td>";
+								tabCont+='<td align="center" style="color:red;font-weight: bold">TOTAL</td>';
+								tabCont+='<td align="center" style="color:red;font-weight: bold">RM'+total+'</td><tr>';
+								$(table).find('tbody').append( tabCont );
+						}
+						else
+						{
+							var total=0;;
+							var arrd=[];
+							var arri=[];
+							var arrp=[];
+							for (x in jsonData) {
+								var unixTimeZero= jsonData[x].date;
+								if(unixTimeZero>=document.getElementById('f').value && unixTimeZero<=document.getElementById('t').value &&jsonData[x].ID==document.getElementById('c').value)
+								{
+									var ind=-1;
+									for(var i=0;i<arri.length;i++)
+									{
+										if(arri[i]==jsonData[x].ID && arrd[i]==jsonData[x].date)
+											ind=i;
+									}
+									if(ind==-1)
+									{
+										arri.push(jsonData[x].ID);
+										arrd.push(jsonData[x].date);
+										arrp.push(parseInt(jsonData[x].price));
+									}
+									else
+										arrp[ind]+=parseInt(jsonData[x].price);
+								}
+								
+							}
+							for(var i=0;i<arri.length;i++)
+							{
+								var name="";
+								for(var j=0;j<aid.length;j++)
+								{
+									if(aid[j]==arri[i])
+										name=aname[j];
+								}
+									var tabCont='<tr><td align="center">'+name+'</td>';
+									tabCont+='<td align="center">'+arrd[i]+'</td>';
+									tabCont+='<td align="center">'+Math.ceil(arrp[i]/10)+'</td><tr>';
+									$(table).find('tbody').append( tabCont );
+									total+=Math.ceil(arrp[i]/10);
+							}
+							var tabCont="<tr><td></td>";
+								tabCont+='<td align="center" style="color:red;font-weight: bold">TOTAL</td>';
+								tabCont+='<td align="center" style="color:red;font-weight: bold">RM'+total+'</td><tr>';
+								$(table).find('tbody').append( tabCont );
+						}
+					   
+					}
+		});
+	}
+	</script>
+</html>

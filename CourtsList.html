@@ -1,0 +1,258 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Courts List</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+	</head>
+	<body class="subpage">
+
+		<!-- Header -->
+			<header id="header">
+				<div class="logo"><a href="index.html"> <span>Courts List</span></a></div>
+				<a href="#menu">Menu</a>
+			</header>
+
+		<!-- Nav -->
+			<nav id="menu">
+				<ul class="links">
+					<li><a href="ManageCourts.html">Manage Courts</a></li>
+					<li><a href="editBo.html">Profile</a></li>
+					<li><a href="bookcourtBo.html">Booking Court</a></li>
+					<li><a href="historyBo.html">Booking History</a></li>
+					<li><a href="bostat.html">Sale Statistics</a></li>
+					<li><a href="index.php">Sign Out</a></li>
+				</ul>
+			</nav>
+
+		<!-- Main -->
+			<div id="main">
+
+				<!-- Section -->
+					<section class="wrapper">
+						<div class="inner">
+						<header class="align-center">
+								<h1>List Of Courts</h1>
+							</header>
+							<div id="crts" style="width:70%;margin-left:15%">
+							</div>
+							<button id="add" class="button fit" style="width:250px; background:green">Add New Court</button>
+						</div>
+						
+					
+					</section>
+					
+			</div>
+					
+
+			</div>
+
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/skel.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+	<script>
+		var queryString = decodeURIComponent(window.location.search);
+		queryString = queryString.substring(1);
+				$.ajax({
+				type:"post",
+				url:"court.php",
+				data: 
+				{  
+				   'action' :'getcourts',
+				   'cid' :queryString
+				},
+				cache:false,
+				success: function (html) 
+				{
+				   var jsonData = JSON.parse(html);
+				   var count=1;
+				   for (x in jsonData) {
+						var labelName="Court "+count;
+						count++;
+						var ohId="oh"+jsonData[x].ID;
+						var chId="ch"+jsonData[x].ID;
+						var ppId="pp"+jsonData[x].ID;
+						var npId="np"+jsonData[x].ID;
+						var spId="sp"+jsonData[x].ID;
+						var tyId="de"+jsonData[x].ID;
+						var delId="del"+jsonData[x].ID;
+						var savId="sav"+jsonData[x].ID;
+						var newdiv='<h3>'+labelName+'</h3><div class="row uniform"><div class="6u 12u$(xsmall)">Opening Time: <select id="'+ohId+'">'+
+							'<option value="">- Opening Time -</option>'+
+							'<option value="7">7 AM</option>'+
+							'<option value="8">8 AM</option>'+
+							'<option value="9">9 AM</option>'+
+							'<option value="10">10 AM</option>'+
+							'<option value="11">11 AM</option>'+
+							'<option value="12">12 PM</option>'+
+							'<option value="13">1 PM</option>'+
+							'</select>Closing Time: <select id="'+chId+'">'+
+							'<option value="">- Closing Time -</option>'+
+							'<option value="16">4 PM</option>'+
+							'<option value="17">5 PM</option>'+
+							'<option value="18">6 PM</option>'+
+							'<option value="19">7 PM</option>'+
+							'<option value="20">8 PM</option>'+
+							'<option value="21">9 PM</option>'+
+							'<option value="22">10 PM</option>'+
+							'</select>Student Price:<input type="text" name="sp" id="'+spId+'" value="'+jsonData[x].sprice+'" 	placeholder="Footsal Court Name"></div><div class="6u 12u$(xsmall)">Peak Hours Price:<input type="text" name="pp" id="'+ppId+'" value="'+jsonData[x].pprice+'" 	placeholder="Peak Hours Price">Off Peak Hours Price:<input type="text" name="np" id="'+npId+'" value="'+jsonData[x].npprice+'" 	placeholder="Off Peak Hours Price">Court Type: <select name="ty" id="'+tyId+'">'+
+							'<option value="">- Court Type -</option>'+
+							'<option value="Small">Small</option>'+
+							'<option value="Medium">Medium</option>'+
+							'<option value="Big">Big</option></div></div>';
+							
+						document.getElementById("crts").innerHTML +=newdiv;
+						
+						document.getElementById("crts").innerHTML +='<div class="row uniform"><div class="6u 12u$(xsmall)"><button onclick="save('+jsonData[x].ID+')" id="'+savId+'" class="button fit" style="background:green">Save</button></div><div class="6u 12u$(xsmall)"><button onclick="del('+jsonData[x].ID+')" id="'+delId+'" class="button fit" style="background:red">Remove</button></div><hr class="major"></div>';
+						
+				
+				   }
+				      for (x in jsonData) {
+					  var ohId="oh"+jsonData[x].ID;
+						var chId="ch"+jsonData[x].ID;
+						var ppId="pp"+jsonData[x].ID;
+						var npId="np"+jsonData[x].ID;
+						var spId="sp"+jsonData[x].ID;
+						var tyId="de"+jsonData[x].ID;
+						document.getElementById(ohId).value=jsonData[x].open;
+						document.getElementById(chId).value=jsonData[x].close;
+						document.getElementById(tyId).value=jsonData[x].type;
+					  }
+				}
+				});
+				function del(id)
+				{
+					$.ajax({
+						type:"post",
+						url:"court.php",
+						data: 
+						{  
+						   'action' :'deleteCourt',
+						   'id': id
+						},
+						cache:false,
+						success: function (html) 
+						{
+							alert(html);
+							window.location.reload();
+						}
+						});
+				}
+				function save(id)
+				{
+					var ohId="oh"+id;
+					var chId="ch"+id;
+					var ppId="pp"+id;
+					var npId="np"+id;
+					var spId="sp"+id;
+					var tyId="de"+id;	
+					var oh=document.getElementById(ohId).value;
+					var ch=document.getElementById(chId).value;
+					var pp=document.getElementById(ppId).value;
+					var np=document.getElementById(npId).value;
+					var sp=document.getElementById(spId).value;
+					var ty=document.getElementById(tyId).value;
+					if(oh.length<1 || ch.length<1 || pp.length<1 || np.length<1 || sp.length<1 || ty.length<1)
+					{
+						alert("Please Fill All the Field");
+						return;
+					}
+					$.ajax({
+						type:"post",
+						url:"court.php",
+						data: 
+						{  
+						   'action' :'updateCourt',
+						   'open' :oh,
+						   'close' : ch,
+						   'pprice' : pp,
+						   'nprice' :np,
+						   'sprice' :sp,
+						   'type':ty,
+						   'id': id
+						},
+						cache:false,
+						success: function (html) 
+						{
+							alert(html);
+							window.location.reload();
+						}
+						});
+				}
+		document.getElementById("add").onclick=function()
+		{
+		
+			if(document.getElementById("add").innerHTML =='Add New Court')
+			{
+				var newdiv='<div class="row uniform"><div class="6u 12u$(xsmall)">Opening Time: <select name="oh" id="oh">'+
+							'<option value="">- Opening Time -</option>'+
+							'<option value="7">7 AM</option>'+
+							'<option value="8">8 AM</option>'+
+							'<option value="9">9 AM</option>'+
+							'<option value="10">10 AM</option>'+
+							'<option value="11">11 AM</option>'+
+							'<option value="12">12 PM</option>'+
+							'<option value="13">1 PM</option>'+
+							'</select>Closing Time: <select name="ch" id="ch">'+
+							'<option value="">- Closing Time -</option>'+
+							'<option value="16">4 PM</option>'+
+							'<option value="17">5 PM</option>'+
+							'<option value="18">6 PM</option>'+
+							'<option value="19">7 PM</option>'+
+							'<option value="20">8 PM</option>'+
+							'<option value="21">9 PM</option>'+
+							'<option value="22">10 PM</option>'+
+							'</select></div><div class="6u 12u$(xsmall)">Peak Hours Price:<input type="text" name="pp" id="pp" value="" 	placeholder="Peak Hours Price">Off Peak Hours Price:<input type="text" name="np" id="np" value="" 	placeholder="Off Peak Hours Price"></div><div class="6u 12u$(xsmall)">Student Price:<input type="text" name="sp" id="sp" value="" 	placeholder="Footsal Court Name"></div><div class="6u 12u$(xsmall)">Court Type: <select name="ty" id="ty">'+
+							'<option value="">- Court Type -</option>'+
+							'<option value="Small">Small</option>'+
+							'<option value="Medium">Medium</option>'+
+							'<option value="Big">Big</option></div></div>';
+				document.getElementById("crts").innerHTML +=newdiv;
+				document.getElementById("add").innerHTML="Save";
+			}
+			else
+			{
+				var open=document.getElementById("oh").value;
+				var close=document.getElementById("ch").value;
+				var pprice=document.getElementById("pp").value;
+				var nprice=document.getElementById("np").value;
+				var sprice=document.getElementById("sp").value;
+				var type=document.getElementById("ty").value;
+				if(open.length<1 || close.length<1 || pprice.length<1 || nprice.length<1 || sprice.length<1 || type.length<1)
+				{
+					alert("Please Fill All the Field");
+					return;
+				}
+				$.ajax({
+				type:"post",
+				url:"court.php",
+				data: 
+				{  
+				   'action' :'addcourt',
+				   'cid' : queryString,
+				   'open' :open,
+				   'close' : close,
+				   'pprice' : pprice,
+				   'nprice' :nprice,
+				   'sprice' :sprice,
+				   'type':type
+				},
+				cache:false,
+				success: function (html) 
+				{
+					alert(html);
+				   window.location.reload();
+				}
+				});
+			}	
+		}
+	</script>
+</html>

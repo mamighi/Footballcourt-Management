@@ -1,0 +1,113 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Add Admin Account</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+	</head>
+	<body class="subpage">
+
+		<!-- Header -->
+			<header id="header">
+				<div class="logo"><a href=""> <span>Add Admin Account</span></a></div>
+				<a href="#menu">Menu</a>
+			</header>
+
+		<!-- Nav -->
+			<nav id="menu">
+				<ul class="links">
+					<li><a href="adminHome.html">Bussiness Owner Requests</a></li>
+					<li><a href="editad.html">Profile</a></li>
+					<li><a href="addAdmin.html">Add Admin</a></li>
+					<li><a href="userList.html">View Users</a></li>
+					<li><a href="adminstat.html">Sale Staticss</a></li>
+					<li><a href="index.php">Sign Out</a></li>
+				</ul>
+			</nav>
+
+		<!-- Main -->
+			<div id="main">
+
+				<!-- Section -->
+					<section class="wrapper">
+						<div class="inner">
+							<header class="align-center">
+								<h1>Account Details</h1>
+							</header>
+									  
+		
+				
+			
+				<div class="row uniform">
+					<div class="6u 12u$(xsmall)">
+					Full Name:
+					<input type="text" name="FullName" id="fname" value="" placeholder="Full Name">
+					</div>
+					<div class="6u 12u$(xsmall)">
+					Email:
+					<input type="text" name="email" id="email" value="" placeholder="Email">
+					</div>
+					<div class="6u 12u$(xsmall)">
+					Password:
+					<input type="password" name="pas" id="pas" value="" placeholder="Password">
+					</div>
+					<div class="6u 12u$(xsmall)">
+					Contact Number:
+					<input type="text" name="pas" id="cno" value="" placeholder="Contact Number">
+					</div>
+					<div class="6u 12u$(xsmall)">
+					<button id="signUp" class="button big scrolly" style="width:100%; height:50px">Sign Up</button>
+					</div>
+				</div>
+				</div>
+						
+					</section>
+					
+			</div>
+					
+
+			</div>
+
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/skel.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+	<script>
+	document.getElementById("signUp").onclick=function(){
+		var name=document.getElementById("fname").value;
+			var cno=document.getElementById("cno").value;
+			var email=document.getElementById("email").value;
+			var pass=document.getElementById("pas").value;
+			if(name.length<1 || cno.length<1 || email.length<1 || pass.length<1)
+			{
+				alert("Please Fill All The Field");
+				return;
+			}
+			$.ajax({
+				type:"post",
+				url:"login.php",
+				data: 
+				{  
+				   'action' :'signup',
+				   'username' : email,
+				   'pass' :pass,
+				   'name' : name,
+				   'cno': cno,
+				   'ut' : 'admin'
+				},
+				cache:false,
+				success: function (html) 
+				{
+					alert("Account has been added successfully.");
+				}
+				});
+	}
+	</script>
+</html>

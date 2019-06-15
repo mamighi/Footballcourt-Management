@@ -1,0 +1,164 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Bussiness Owner Requests</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+	</head>
+	<body class="subpage">
+
+		<!-- Header -->
+			<header id="header">
+				<div class="logo"><a href=""> <span>Bussiness Account Owner Requests</span></a></div>
+				<a href="#menu">Menu</a>
+			</header>
+
+		<!-- Nav -->
+			<nav id="menu">
+				<ul class="links">
+					<li><a href="adminHome.html">Bussiness Owner Requests</a></li>
+					<li><a href="editad.html">Profile</a></li>
+					<li><a href="addAdmin.html">Add Admin</a></li>
+					<li><a href="userList.html">View Users</a></li>
+					<li><a href="adminstat.html">Sale Staticss</a></li>
+					<li><a href="index.php">Sign Out</a></li>
+				</ul>
+			</nav>
+
+		<!-- Main -->
+			<div id="main">
+
+				<!-- Section -->
+					<section class="wrapper">
+						<div class="inner">
+							<header class="align-center">
+								<h1>List Of Requests</h1>
+							</header>
+
+							<table class="alt" id="table" name="table">
+												<thead>	
+													<tr>
+														<th></th>
+														<th>Username</th>
+														<th>Footsal Court Name</th>
+														<th>State</th>
+														
+													</tr>
+												</thead>
+												<tbody>
+													
+												</tbody>
+
+							</table>
+							<div style=" text-align:center">
+						<button id="Accept" class="button fit" style="width:250px; background:green">Accept</button>
+						<button id="Reject" class="button fit" style="width:250px; background:red">Reject</button>
+							<div id="err" class="align-center">
+								<h3 style="color:green">You Have No Pending Request To Accept Or Reject</h3> 
+							</div>
+					</div>
+						</div>
+						
+					</section>
+					
+			</div>
+					
+
+			</div>
+
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/skel.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+	<script>
+	function getSelectedId()
+	{
+		var radios = document.getElementsByName('priority');
+		for( i = 0; i < radios.length; i++ ) {
+			if( radios[i].checked ) {
+				return radios[i].id;
+			}
+		}
+		return "null";
+	}
+	document.getElementById("Accept").onclick=function(){
+		$.ajax({
+				type:"post",
+				url:"login.php",
+				data: 
+				{  
+				   'action' :'Accept',
+				   'username' : getSelectedId().toString()
+				},
+				cache:false,
+				success: function (html) 
+				{
+				
+				   window.location.reload();
+				}
+				});
+	}
+	document.getElementById('Reject').onclick=function(){
+	
+		$.ajax({
+			
+				type:"post",
+				url:"login.php",
+				data: 
+				{  
+				   'action' :'Reject',
+				   'username' : getSelectedId().toString()
+				},
+				cache:false,
+				success: function (html) 
+				{
+					
+				   window.location.reload();
+				}
+				});
+				}
+		function getCount()
+		{
+			var table = document.getElementById('table');
+			var rowCount = table.rows.length;
+	
+			if(rowCount<2)
+			{
+				document.getElementById('table').style.display='none';
+				document.getElementById('Accept').style.display='none';
+				document.getElementById('Reject').style.display='none';
+				document.getElementById('err').style.display='block';
+				
+			}
+			else
+			{
+		
+				document.getElementById('err').style.display='none';
+			}
+		}
+		$.ajax({
+				type:"post",
+				url:"login.php",
+				data: 
+				{  
+				   'action' :'getpendingAccount'
+				},
+				cache:false,
+				success: function (html) 
+				{
+					
+					$(table).find('tbody').append( html );
+					getCount();
+				  
+				}
+				
+			});
+	</script>
+</html>

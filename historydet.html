@@ -1,0 +1,229 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Booking History</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+	</head>
+	<body class="subpage">
+
+		<!-- Header -->
+			<header id="header">
+				<div class="logo"><a href=""> <span>Booking History</span></a></div>
+				<a href="#menu">Menu</a>
+			</header>
+
+		<!-- Nav -->
+			<nav id="menu">
+				<ul class="links">
+					<li><a href="ManageCourts.html">Manage Courts</a></li>
+					<li><a href="editBo.html">Profile</a></li>
+					<li><a href="bookcourtBo.html">Booking Court</a></li>
+					<li><a href="historyBo.html">Booking History</a></li>
+					<li><a href="bostat.html">Sale Statistics</a></li>
+					<li><a href="index.php">Sign Out</a></li>
+				</ul>
+			</nav>
+
+		<!-- Main -->
+			<div id="main">
+
+				<!-- Section -->
+					<section class="wrapper">
+						<div class="inner">
+							<header class="align-center">
+								<h1>Booking History</h1>
+							</header>
+							<div class="row uniform">
+								<div class="6u 12u$(xsmall)">
+								Court:
+								<select onchange="loadData();" style="width:50%" name="c" id="c" >
+									
+								</select>
+								</br>
+								</div>
+								
+							</div>
+									<table class="alt" id="table" name="table">
+										<thead>
+										<tr>
+										<th onclick="w3.sortHTML('#table','.item', 'td:nth-child(1)')" style="cursor:pointer">Fustal Court Name</th>
+										<th onclick="w3.sortHTML('#table','.item', 'td:nth-child(2)')" style="cursor:pointer">Date</th>
+										<th onclick="w3.sortHTML('#table','.item', 'td:nth-child(3)')" style="cursor:pointer">Time</th>
+										<th onclick="w3.sortHTML('#table','.item', 'td:nth-child(4)')" style="cursor:pointer">Price</th>
+										<th onclick="w3.sortHTML('#table','.item', 'td:nth-child(5)')" style="cursor:pointer">Payment Method</th>
+										</tr>
+										</thead>
+												<tbody>
+													
+												</tbody>
+
+							</table>
+						
+					</section>
+					
+			</div>
+					
+
+			</div>
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/skel.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+			<script src="https://www.w3schools.com/lib/w3.js"></script>
+	</body>
+	<script>
+	var queryString = decodeURIComponent(window.location.search);
+	queryString = queryString.substring(1);
+	loadcourts();
+	var courtid=[];
+	function loadcourts()
+	{
+			$.ajax({
+				type:"post",
+				url:"court.php",
+				data: 
+				{  
+				   'action' :'getcourts',
+				   'cid' : queryString
+				},
+				cache:false,
+				success: function (html) 
+				{
+				var z = document.getElementById("c");
+					var option2 = document.createElement("option");
+					option2.text = "All Courts";
+					option2.value="";
+					z.add(option2);
+					 var jsonData = JSON.parse(html);
+					 var count=1;
+					 for(x in jsonData)
+					 {
+						
+						var option = document.createElement("option");
+						option.text = 'Courts '+count;
+						option.value=jsonData[x].ID;
+						z.add(option);
+						courtid.push(jsonData[x].ID);
+						count++;
+					}
+				}
+			});
+	}
+	function getHour(h)
+	{
+		if(h==7)
+			return "7AM - 8AM";
+		if(h==8)
+			return "8AM - 9AM";
+		if(h==9)
+			return "9AM - 10AM";
+		if(h==10)
+			return "10AM - 11AM";
+		if(h==11)
+			return "11AM - 12PM";
+		if(h==12)
+			return "12PM - 1PM";
+		if(h==13)
+			return "1PM - 2PM";
+		if(h==14)
+			return "2PM - 3PM";
+		if(h==15)
+			return "3PM - 4PM";
+		if(h==16)
+			return "4PM - 5PM";
+		if(h==17)
+			return "5PM - 6PM";
+		if(h==18)
+			return "6PM - 7PM";
+		if(h==19)
+			return "7PM - 8PM";
+		if(h==20)
+			return "8PM - 9PM";
+		if(h==21)
+			return "9PM - 10PM";
+		if(h==22)
+			return "10PM - 11PM";
+		if(h==23)
+			return "11PM - 12AM";
+	}
+	loadData();
+	function loadData()
+	{
+		var cid=document.getElementById('c').value;
+			var tableHeaderRowCount = 1;
+		var table = document.getElementById('table');
+		var rowCount = table.rows.length;
+		for (var i = tableHeaderRowCount; i < rowCount; i++) {
+			table.deleteRow(tableHeaderRowCount);
+		}
+		$.ajax({
+			type:"post",
+			url:"booking.php",
+			data: 
+			{  
+			   'action' :'ctbooking',
+			   'username': queryString
+			},
+			cache:false,
+			success: function (html) 
+			{
+				var jsonData = JSON.parse(html);
+				if(cid.length<1)
+				{
+					for (x in jsonData) {
+						if(jsonData[x].cid==queryString)
+						{
+							var cno="";
+							for(var i=0;i<courtid.length;i++)
+							{
+								if(courtid[i]==jsonData[x].ID)
+								{
+									var tno=i+1;
+									cno="Court "+tno;
+								}	
+							}
+							var tabCont="<tr class='item'>";
+							tabCont+='<td align="center">'+jsonData[x].Name+' / '+cno+'</td>';
+							tabCont+='<td align="center">'+jsonData[x].date+'</td>';
+							tabCont+='<td align="center">'+getHour(jsonData[x].time)+'</td>';
+							tabCont+='<td align="center">'+jsonData[x].price+'</td>';
+							tabCont+='<td align="center">'+jsonData[x].pm+'</td><tr>';
+							$(table).find('tbody').append( tabCont );
+						}
+					}
+				}
+				else
+				{
+					for (x in jsonData) {
+						if(jsonData[x].cid==queryString && jsonData[x].ID==cid)
+						{
+						var cno="";
+							for(var i=0;i<courtid.length;i++)
+							{
+								if(courtid[i]==jsonData[x].ID)
+								{
+									var tno=i+1;
+									cno="Court "+tno;
+								}	
+							}
+							var tabCont="<tr class='item'>";
+							tabCont+='<td align="center">'+jsonData[x].Name+' / '+cno+'</td>';
+							tabCont+='<td align="center">'+jsonData[x].date+'</td>';
+							tabCont+='<td align="center">'+getHour(jsonData[x].time)+'</td>';
+							tabCont+='<td align="center">'+jsonData[x].price+'</td>';
+							tabCont+='<td align="center">'+jsonData[x].pm+'</td><tr>';
+							$(table).find('tbody').append( tabCont );
+						}
+					}
+				}
+						   
+			}
+		});
+	}
+	</script>
+</html>
